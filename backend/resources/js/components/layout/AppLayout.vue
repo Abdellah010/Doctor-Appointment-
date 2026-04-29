@@ -1,4 +1,8 @@
 <template>
+  <Head :title="pageTitle">
+    <meta name="description" :content="pageSubTitle">
+  </Head>
+
   <div class="min-h-screen bg-[#F0F4F8] dark:bg-ink font-sans flex overflow-x-hidden transition-colors duration-300" :dir="isRTL ? 'rtl' : 'ltr'">
     <!-- Mobile overlay -->
     <div
@@ -53,25 +57,32 @@
 
         <div class="ml-auto flex items-center gap-1.5 md:gap-4">
           
-          <!-- Theme Toggle -->
-          <button @click="toggleDark()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-white/10 transition-colors text-slate-600 dark:text-white/70 flex-shrink-0">
-            <!-- Sun Icon (Light Mode) -->
-            <svg v-if="!isDark" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="5"></circle>
-              <line x1="12" y1="1" x2="12" y2="3"></line>
-              <line x1="12" y1="21" x2="12" y2="23"></line>
-              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-              <line x1="1" y1="12" x2="3" y2="12"></line>
-              <line x1="21" y1="12" x2="23" y2="12"></line>
-              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-            </svg>
-            <!-- Moon Icon (Dark Mode) -->
-            <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-            </svg>
-          </button>
+          <!-- Theme Toggle (3-State) -->
+          <div class="relative" ref="themeRef">
+            <button 
+              @click="themeOpen = !themeOpen" 
+              class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-white/10 transition-all text-slate-600 dark:text-white/70 shadow-sm border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5"
+            >
+              <!-- Show current mode icon -->
+              <svg v-if="mode === 'light'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+              <svg v-else-if="mode === 'dark'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+              <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+            </button>
+
+            <Transition name="lang-pop">
+              <div v-if="themeOpen" class="absolute right-0 top-11 w-36 bg-white dark:bg-ink border border-slate-200 dark:border-white/10 rounded-xl shadow-xl py-1.5 z-50 overflow-hidden">
+                <button @click="mode = 'light'; themeOpen = false" :class="['w-full flex items-center gap-3 px-4 py-2 text-sm transition-colors', mode === 'light' ? 'text-emerald font-bold bg-emerald-4 dark:bg-emerald/10' : 'text-slate-700 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5']">
+                  <span class="text-base">☀️</span> Light
+                </button>
+                <button @click="mode = 'dark'; themeOpen = false" :class="['w-full flex items-center gap-3 px-4 py-2 text-sm transition-colors', mode === 'dark' ? 'text-emerald font-bold bg-emerald-4 dark:bg-emerald/10' : 'text-slate-700 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5']">
+                  <span class="text-base">🌙</span> Dark
+                </button>
+                <button @click="mode = 'auto'; themeOpen = false" :class="['w-full flex items-center gap-3 px-4 py-2 text-sm transition-colors', mode === 'auto' ? 'text-emerald font-bold bg-emerald-4 dark:bg-emerald/10' : 'text-slate-700 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5']">
+                  <span class="text-base">💻</span> System
+                </button>
+              </div>
+            </Transition>
+          </div>
 
           <!-- Language Dropdown -->
           <div class="relative" ref="langRef">
@@ -194,8 +205,8 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { Link, usePage, router } from '@inertiajs/vue3'
-import { onClickOutside, useDark, useToggle } from '@vueuse/core'
+import { Link, Head, usePage, router } from '@inertiajs/vue3'
+import { onClickOutside, useColorMode } from '@vueuse/core'
 import { useAuthStore } from '@/stores/auth'
 import { useI18n } from 'vue-i18n'
 import AppSidebar from './AppSidebar.vue'
@@ -207,26 +218,37 @@ const { t, locale } = useI18n()
 
 const menuOpen = ref(false)
 const langOpen = ref(false)
+const themeOpen = ref(false)
 const mobileMenuOpen = ref(false)
 const avatarRef = ref<HTMLElement>()
 const langRef = ref<HTMLElement>()
+const themeRef = ref<HTMLElement>()
 
 onClickOutside(avatarRef, () => { menuOpen.value = false })
 onClickOutside(langRef, () => { langOpen.value = false })
+onClickOutside(themeRef, () => { themeOpen.value = false })
 
 // Close mobile menu on navigate
 router.on('navigate', () => { mobileMenuOpen.value = false })
 
 const flash = computed(() => page.props.flash as Record<string, string> ?? {})
 
-// Theme logic (Uses VueUse to automatically handle html class and localstorage)
-const isDark = useDark()
-const toggleDark = useToggle(isDark)
+// Theme — useColorMode handles light, dark, and auto (system)
+const mode = useColorMode({
+  selector: 'html',
+  attribute: 'class',
+  modes: {
+    dark: 'dark',
+    light: '',
+  },
+  storageKey: 'vueuse-color-scheme',
+})
 
-// Explicitly sync theme to html class to avoid hydration/initialization issues
-watch(isDark, (val) => {
-  if (val) document.documentElement.classList.add('dark')
-  else     document.documentElement.classList.remove('dark')
+// Safety sync for dark mode class
+watch(mode, (val) => {
+  const isDark = val === 'dark' || (val === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+  if (isDark) document.documentElement.classList.add('dark')
+  else       document.documentElement.classList.remove('dark')
 }, { immediate: true })
 
 // I18n logic

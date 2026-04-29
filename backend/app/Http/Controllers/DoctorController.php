@@ -21,19 +21,8 @@ class DoctorController extends Controller
     {
         $doctors = $this->searchService->search($request);
 
-        $specialties = [
-            'Cardiology', 'Dermatology', 'Endocrinology', 'Gastroenterology', 
-            'General Practice', 'Gynecology', 'Neurology', 'Oncology', 
-            'Ophthalmology', 'Orthopedics', 'Pediatrics', 'Psychiatry', 
-            'Pulmonology', 'Radiology', 'Rheumatology', 'Urology', 'Dentistry'
-        ];
-
-        $cities = [
-            'Casablanca', 'Rabat', 'Marrakech', 'Fes', 'Tangier', 
-            'Agadir', 'Meknes', 'Oujda', 'Kenitra', 'Tetouan', 
-            'Safi', 'Mohammedia', 'Khouribga', 'El Jadida', 'Beni Mellal',
-            'Nador', 'Taza', 'Settat'
-        ];
+        $specialties = config('healthcare.specialties', []);
+        $cities      = config('healthcare.cities', []);
 
         return Inertia::render('Doctors/Index', [
             'doctors'    => $doctors,
