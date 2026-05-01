@@ -83,4 +83,4 @@ npm run build
 
 ## 🛡️ License
 
-© {{ new Date().getFullYear() }} **DocAppoint**. All rights reserved. Professional Healthcare Infrastructure for Morocco.
+© {{ new Date().getFullYear() }} **DocAppoint**. All rights reserved. Professional Healthcare Infrastructure for Morocco.S

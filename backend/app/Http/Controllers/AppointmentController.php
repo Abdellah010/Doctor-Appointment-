@@ -30,8 +30,9 @@ class AppointmentController extends Controller
         );
 
         return redirect()->route('patient.dashboard')
-            ->with('success', 'Appointment confirmed! SMS sent to your phone.');
+            ->with('success', 'Appointment confirmed! SMS sent to your phone once the doctor accepts.');
     }
+
 
     /**
      * PATCH /appointments/{appointment}/cancel
