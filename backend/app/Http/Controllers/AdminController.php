@@ -25,6 +25,7 @@ class AdminController extends Controller
                 'active_doctors'   => Doctor::where('status', 'verified')->count(),
                 'total_appointments' => Appointment::count(),
                 'pending_verifications' => Doctor::where('status', 'pending')->count(),
+                'rejected_doctors' => Doctor::where('status', 'rejected')->count(),
             ],
             'recent_appointments' => Appointment::with(['patient', 'doctor.user'])
                 ->orderByDesc('created_at')

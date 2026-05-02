@@ -102,6 +102,7 @@ export interface AdminDashboardProps {
     active_doctors: number
     total_appointments: number
     pending_verifications: number
+    rejected_doctors: number
   }
   recent_appointments: Appointment[]
   weekly_activity: { label: string; count: number }[]
