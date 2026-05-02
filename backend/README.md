@@ -49,12 +49,15 @@ composer install
 npm install
 ```
 
-### 2. Environment Configuration
+### 2. Environment Configuration & CORS
 ```bash
 cp .env.example .env
 php artisan key:generate
 ```
-*Update your `.env` with your database credentials and API keys (Google/Twilio).*
+*Update your `.env` with your database credentials. For proper API access (CORS), ensure you set `FRONTEND_URL` if you are using a separate frontend:*
+```ini
+FRONTEND_URL=http://localhost:3000
+```
 
 ### 3. Database Initialization
 ```bash
