@@ -189,7 +189,9 @@ function timeAgo(dateStr: string): string {
 }
 
 function approve(doctorId: number) {
-  router.patch(`/admin/doctors/${doctorId}/approve`)
+  router.patch(`/admin/doctors/${doctorId}/approve`, {}, {
+    preserveScroll: true,
+  })
 }
 
 function openReject(doctor: Doctor) {
@@ -200,6 +202,7 @@ function openReject(doctor: Doctor) {
 function submitReject() {
   if (!rejectModal.doctor) return
   router.patch(`/admin/doctors/${rejectModal.doctor.id}/reject`, rejectForm, {
+    preserveScroll: true,
     onSuccess: () => { rejectModal.open = false },
   })
 }
