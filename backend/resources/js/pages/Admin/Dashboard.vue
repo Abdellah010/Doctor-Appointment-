@@ -101,7 +101,7 @@
               <div class="flex items-center gap-3">
                 <div class="w-2.5 h-2.5 rounded-full bg-red-400 flex-shrink-0"></div>
                 <div class="flex-1 text-sm text-ink">Rejected</div>
-                <div class="text-[15px] font-extrabold text-red-600">3</div>
+                <div class="text-[15px] font-extrabold text-red-600">{{ stats.rejected_doctors }}</div>
               </div>
             </div>
           </div>
