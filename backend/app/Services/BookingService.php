@@ -51,7 +51,7 @@ class BookingService
                 'slot_id'          => $slot->id,
                 'scheduled_at'     => $slot->date->format('Y-m-d') . ' ' . $slot->start_time,
                 'duration_minutes' => $doctor->slot_duration ?? 30,
-                'status'           => AppointmentStatus::Confirmed,
+                'status'           => AppointmentStatus::Pending,
                 'reason'           => $data['reason'] ?? null,
                 'insurance_type'   => $data['insurance_type'] ?? null,
                 'fee'              => $doctor->consultation_fee,
@@ -60,7 +60,7 @@ class BookingService
             $slot->update(['is_booked' => true]);
 
             // Dispatch SMS notification in background
-            SendAppointmentSms::dispatch($appointment)->delay(now()->addSeconds(5));
+            // SMS will be sent when the doctor accepts the appointment
 
             return $appointment;
         });

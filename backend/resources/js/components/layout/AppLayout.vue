@@ -3,36 +3,36 @@
     <meta name="description" :content="pageSubTitle">
   </Head>
 
-  <div class="min-h-screen bg-[#F0F4F8] dark:bg-ink font-sans flex overflow-x-hidden transition-colors duration-300" :dir="isRTL ? 'rtl' : 'ltr'">
+  <div class="root-layout min-h-screen bg-[#F0F4F8] dark:bg-ink font-sans transition-colors duration-300 md:flex" :dir="isRTL ? 'rtl' : 'ltr'">
+    
     <!-- Mobile overlay -->
     <div
       v-if="auth.isLoggedIn && mobileMenuOpen"
-      class="fixed inset-0 bg-ink/50 dark:bg-black/60 z-[60] md:hidden backdrop-blur-sm"
+      class="fixed inset-0 bg-ink/60 z-[100] md:hidden backdrop-blur-sm animate-in fade-in duration-300"
       @click="mobileMenuOpen = false"
     ></div>
 
-    <!-- Sidebar (Only for logged in users) -->
-    <AppSidebar
+    <!-- Sidebar: Fixed overlay on mobile, relative panel on desktop -->
+    <div
       v-if="auth.isLoggedIn"
-      class="z-[70] transition-all duration-300 fixed inset-y-0 left-0 md:relative md:translate-x-0"
-      :class="[
-        mobileMenuOpen 
-          ? 'w-[240px] translate-x-0 shadow-2xl visible pointer-events-auto' 
-          : 'w-0 md:w-[240px] -translate-x-full invisible pointer-events-none md:translate-x-0 md:visible md:pointer-events-auto'
-      ]"
-    />
+      class="sidebar-container fixed md:relative inset-y-0 left-0 z-[110] transition-transform duration-300 ease-out md:translate-x-0"
+      :class="[mobileMenuOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full md:translate-x-0']"
+    >
+      <AppSidebar class="w-[260px] h-full" />
+    </div>
 
-    <div class="flex-1 flex flex-col h-[100dvh] overflow-hidden w-full">
+    <!-- Main Content Area -->
+    <div class="flex-1 flex flex-col min-h-screen min-w-0 w-full overflow-x-hidden">
       <!-- Top navigation bar -->
-      <header class="h-[54px] md:h-[58px] bg-white dark:bg-ink-2 border-b border-slate-200 dark:border-white/10 shadow-sm flex items-center px-3 md:px-7 flex-shrink-0 z-50 transition-colors duration-300">
+      <header class="h-[58px] bg-white dark:bg-ink-2 border-b border-slate-200 dark:border-white/10 shadow-sm flex items-center px-4 md:px-7 flex-shrink-0 z-50">
         
-        <!-- Mobile hamburger (Logged in only) -->
+        <!-- Mobile hamburger -->
         <button
           v-if="auth.isLoggedIn"
           @click="mobileMenuOpen = true"
-          class="md:hidden w-8 h-8 flex items-center justify-center mr-3 text-slate-500 dark:text-white/70"
+          class="md:hidden w-10 h-10 -ml-2 flex items-center justify-center text-slate-500 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5 rounded-full transition-colors"
         >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
             <line x1="3" y1="12" x2="21" y2="12"></line>
             <line x1="3" y1="6" x2="21" y2="6"></line>
             <line x1="3" y1="18" x2="21" y2="18"></line>
@@ -49,156 +49,86 @@
           <span class="text-[17px] text-ink dark:text-white font-bold tracking-tight hidden sm:block">DocAppoint</span>
         </Link>
 
-        <!-- Crumbs / Title -->
-        <div v-else class="flex flex-col truncate">
-          <div class="text-[14px] font-bold text-ink dark:text-white leading-tight truncate">{{ pageTitle }}</div>
+        <!-- Page Identity -->
+        <div v-else class="flex flex-col truncate ml-2 md:ml-0">
+          <div class="text-[15px] font-bold text-ink dark:text-white leading-tight truncate">{{ pageTitle }}</div>
           <div class="text-[11px] text-slate-400 dark:text-white/40 mt-0.5 truncate hidden sm:block">{{ pageSubTitle }}</div>
         </div>
 
-        <div class="ml-auto flex items-center gap-1.5 md:gap-4">
-          
-          <!-- Theme Toggle (3-State) -->
-          <div class="relative" ref="themeRef">
-            <button 
-              @click="themeOpen = !themeOpen" 
-              class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-white/10 transition-all text-slate-600 dark:text-white/70 shadow-sm border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5"
-            >
-              <!-- Show current mode icon -->
-              <svg v-if="mode === 'light'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-              <svg v-else-if="mode === 'dark'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-              <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
-            </button>
+        <div class="ml-auto flex items-center gap-2 md:gap-4">
+          <!-- Theme & Language Toggles -->
+          <div class="flex items-center gap-1.5">
+            <!-- Theme Toggle -->
+            <div class="relative" ref="themeRef">
+              <button @click="themeOpen = !themeOpen" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-white/10 transition-all text-slate-600 dark:text-white/70 border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5">
+                <svg v-if="mode === 'light'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                <svg v-else-if="mode === 'dark'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+              </button>
+              <Transition name="pop">
+                <div v-if="themeOpen" class="absolute right-0 top-11 w-40 bg-white dark:bg-ink border border-slate-200 dark:border-white/10 rounded-xl shadow-2xl py-1.5 z-[120]">
+                  <button @click="mode = 'light'; themeOpen = false" :class="['w-full flex items-center gap-3 px-4 py-2.5 text-sm', mode === 'light' ? 'text-emerald font-bold bg-emerald/5' : 'text-slate-600 dark:text-white/60 hover:bg-slate-50 dark:hover:bg-white/5']">☀️ Light</button>
+                  <button @click="mode = 'dark'; themeOpen = false" :class="['w-full flex items-center gap-3 px-4 py-2.5 text-sm', mode === 'dark' ? 'text-emerald font-bold bg-emerald/5' : 'text-slate-600 dark:text-white/60 hover:bg-slate-50 dark:hover:bg-white/5']">🌙 Dark</button>
+                  <button @click="mode = 'auto'; themeOpen = false" :class="['w-full flex items-center gap-3 px-4 py-2.5 text-sm', mode === 'auto' ? 'text-emerald font-bold bg-emerald/5' : 'text-slate-600 dark:text-white/60 hover:bg-slate-50 dark:hover:bg-white/5']">💻 System</button>
+                </div>
+              </Transition>
+            </div>
 
-            <Transition name="lang-pop">
-              <div v-if="themeOpen" class="absolute right-0 top-11 w-36 bg-white dark:bg-ink border border-slate-200 dark:border-white/10 rounded-xl shadow-xl py-1.5 z-50 overflow-hidden">
-                <button @click="mode = 'light'; themeOpen = false" :class="['w-full flex items-center gap-3 px-4 py-2 text-sm transition-colors', mode === 'light' ? 'text-emerald font-bold bg-emerald-4 dark:bg-emerald/10' : 'text-slate-700 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5']">
-                  <span class="text-base">☀️</span> Light
-                </button>
-                <button @click="mode = 'dark'; themeOpen = false" :class="['w-full flex items-center gap-3 px-4 py-2 text-sm transition-colors', mode === 'dark' ? 'text-emerald font-bold bg-emerald-4 dark:bg-emerald/10' : 'text-slate-700 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5']">
-                  <span class="text-base">🌙</span> Dark
-                </button>
-                <button @click="mode = 'auto'; themeOpen = false" :class="['w-full flex items-center gap-3 px-4 py-2 text-sm transition-colors', mode === 'auto' ? 'text-emerald font-bold bg-emerald-4 dark:bg-emerald/10' : 'text-slate-700 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5']">
-                  <span class="text-base">💻</span> System
-                </button>
-              </div>
-            </Transition>
+            <!-- Language Toggle -->
+            <div class="relative" ref="langRef">
+              <button @click="langOpen = !langOpen" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-white/10 transition-all text-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5">
+                {{ currentFlag }}
+              </button>
+              <Transition name="pop">
+                <div v-if="langOpen" class="absolute right-0 top-11 w-44 bg-white dark:bg-ink border border-slate-200 dark:border-white/10 rounded-xl shadow-2xl py-1.5 z-[120]">
+                  <button @click="setLang('en')" class="w-full flex items-center gap-3 px-4 py-3 text-sm text-slate-600 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5">🇺🇸 English</button>
+                  <button @click="setLang('fr')" class="w-full flex items-center gap-3 px-4 py-3 text-sm text-slate-600 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5">🇫🇷 Français</button>
+                  <button @click="setLang('ar')" class="w-full flex items-center gap-3 px-4 py-3 text-sm text-slate-600 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5 border-t border-slate-100 dark:border-white/5">🇲🇦 العربية</button>
+                </div>
+              </Transition>
+            </div>
           </div>
 
-          <!-- Language Dropdown -->
-          <div class="relative" ref="langRef">
-            <button @click="langOpen = !langOpen" class="flex items-center gap-2 text-sm font-bold text-slate-600 dark:text-white/70 hover:text-ink dark:hover:text-white transition-all bg-slate-100 dark:bg-white/5 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-white/10 shadow-sm">
-              <span class="text-base">{{ currentFlag }}</span>
-              <span class="hidden md:inline uppercase text-[11px] tracking-widest">{{ currentLang }}</span>
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="none" class="opacity-50"><path d="M2 3L5 6L8 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </button>
-            <Transition name="lang-pop">
-              <div v-if="langOpen" class="absolute right-0 top-11 w-40 bg-white dark:bg-ink border border-slate-200 dark:border-white/10 rounded-xl shadow-xl py-1.5 z-50 overflow-hidden">
-                <button @click="setLang('en')" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors group">
-                  <span class="text-lg">🇺🇸</span>
-                  <div class="flex flex-col">
-                    <span class="font-bold text-[13px] group-hover:text-ink dark:group-hover:text-white">English</span>
-                    <span class="text-[10px] opacity-40 uppercase tracking-tighter">USA / UK</span>
-                  </div>
-                </button>
-                <button @click="setLang('fr')" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors group">
-                  <span class="text-lg">🇫🇷</span>
-                  <div class="flex flex-col">
-                    <span class="font-bold text-[13px] group-hover:text-ink dark:group-hover:text-white">Français</span>
-                    <span class="text-[10px] opacity-40 uppercase tracking-tighter">France</span>
-                  </div>
-                </button>
-                <button @click="setLang('ar')" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors group border-t border-slate-50 dark:border-white/5 mt-1 pt-2">
-                  <span class="text-lg">🇲🇦</span>
-                  <div class="flex flex-col items-end w-full">
-                    <span class="font-bold text-[13px] group-hover:text-ink dark:group-hover:text-white">العربية</span>
-                    <span class="text-[10px] opacity-40 uppercase tracking-tighter">المغرب</span>
-                  </div>
-                </button>
-              </div>
-            </Transition>
-          </div>
-
-          <!-- Guest Nav -->
-          <nav v-if="!auth.isLoggedIn" class="hidden md:flex items-center gap-2 mr-2">
-            <Link href="/doctors" class="text-sm text-slate-600 dark:text-white/70 font-medium hover:text-ink dark:hover:text-white px-3 py-2 rounded-lg hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
-              {{ $t('find_doctor') }}
-            </Link>
-          </nav>
-
-          <!-- Auth buttons -->
-          <template v-if="!auth.isLoggedIn">
-            <Link href="/login" class="hidden sm:block text-sm text-slate-600 dark:text-white/70 font-medium hover:text-ink dark:hover:text-white transition-colors mr-2">
-              {{ $t('login') }}
-            </Link>
-            <Link href="/register" class="btn-primary text-xs md:text-sm px-3 md:px-5 py-2">
-              {{ $t('sign_up') }}
-            </Link>
-          </template>
-
-          <!-- User avatar dropdown -->
-          <div v-else class="relative" ref="avatarRef">
-            <button
-              @click="menuOpen = !menuOpen"
-              class="w-[34px] h-[34px] rounded-full bg-ink dark:bg-white/10 flex items-center justify-center text-white text-[11px] font-bold border-2 border-slate-200 dark:border-white/20 hover:border-emerald transition-all"
-            >
+          <!-- User Avatar -->
+          <div v-if="auth.isLoggedIn" class="relative" ref="avatarRef">
+            <button @click="menuOpen = !menuOpen" class="w-9 h-9 rounded-full bg-emerald text-white text-xs font-bold border-2 border-white dark:border-white/10 shadow-sm hover:scale-105 transition-transform">
               {{ initials }}
             </button>
-            <div
-              v-if="menuOpen"
-              class="absolute right-0 top-11 w-52 bg-white dark:bg-ink border border-slate-200 dark:border-white/10 rounded-xl shadow-lg py-1 z-50 overflow-hidden"
-            >
-              <div class="px-4 py-3 border-b border-slate-50 dark:border-white/5 bg-slate-50/50 dark:bg-white/5">
-                <div class="text-sm font-bold text-ink dark:text-white leading-none">{{ auth.user?.name }}</div>
-                <div class="text-[11px] text-slate-400 dark:text-white/40 mt-1.5 truncate">{{ auth.user?.email }}</div>
+            <Transition name="pop">
+              <div v-if="menuOpen" class="absolute right-0 top-11 w-56 bg-white dark:bg-ink border border-slate-200 dark:border-white/10 rounded-2xl shadow-2xl py-2 z-[120]">
+                <div class="px-4 py-3 border-b border-slate-50 dark:border-white/5 mb-2">
+                  <div class="text-sm font-bold text-ink dark:text-white">{{ auth.user?.name }}</div>
+                  <div class="text-[11px] text-slate-400 mt-1 truncate">{{ auth.user?.email }}</div>
+                </div>
+                <Link :href="dashboardUrl" class="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-600 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5">📊 {{ $t('dashboard') }}</Link>
+                <button @click="logout" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10">🚪 {{ $t('logout') }}</button>
               </div>
-              <div class="p-1">
-                <Link
-                  :href="dashboardUrl"
-                  class="flex items-center gap-2 px-3 py-2 text-sm text-slate-600 dark:text-white/70 hover:text-ink dark:hover:text-white hover:bg-slate-50 dark:hover:bg-white/5 rounded-lg transition-colors"
-                  @click="menuOpen = false"
-                >
-                  <span class="text-base opacity-50">📊</span> {{ $t('dashboard') }}
-                </Link>
-                <button
-                  @click="logout"
-                  class="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors"
-                >
-                  <span class="text-base opacity-50">🚪</span> {{ $t('logout') }}
-                </button>
-              </div>
-            </div>
+            </Transition>
           </div>
         </div>
       </header>
 
-      <!-- Scroll body -->
-      <main class="flex-1 overflow-y-auto p-3 md:p-7 relative">
-        <!-- Flash messages -->
-        <Transition name="flash">
-          <div
-            v-if="flash.success"
-            class="fixed bottom-6 right-6 md:bottom-8 md:right-8 z-[100] bg-emerald-4 dark:bg-emerald/90 border border-emerald-3 dark:border-emerald/30 text-[#065F46] dark:text-white text-sm font-bold px-5 py-4 rounded-2xl shadow-2xl flex items-center gap-3 backdrop-blur-md"
-          >
-            <div class="w-6 h-6 rounded-full bg-emerald text-white flex items-center justify-center text-xs">✓</div>
-            <span>{{ flash.success }}</span>
-            <button @click="flash.success = null" class="ml-2 opacity-50 hover:opacity-100">✕</button>
-          </div>
-        </Transition>
-
-        <Transition name="flash">
-          <div
-            v-if="flash.error"
-            class="fixed bottom-6 right-6 md:bottom-8 md:right-8 z-[100] bg-red-50 dark:bg-red-500/90 border border-red-200 dark:border-red-500/30 text-red-700 dark:text-white text-sm font-bold px-5 py-4 rounded-2xl shadow-2xl flex items-center gap-3 backdrop-blur-md"
-          >
-            <div class="w-6 h-6 rounded-full bg-red-600 text-white flex items-center justify-center text-xs">!</div>
-            <span>{{ flash.error }}</span>
-            <button @click="flash.error = null" class="ml-2 opacity-50 hover:opacity-100">✕</button>
-          </div>
-        </Transition>
-
-        <slot />
+      <!-- Main Body -->
+      <main class="flex-1 overflow-y-auto">
+        <div class="p-4 md:p-8 max-w-[1600px] mx-auto w-full">
+          <slot />
+        </div>
         <AppFooter />
       </main>
+
+      <!-- Global Notifications -->
+      <div class="fixed bottom-6 right-6 flex flex-col gap-3 z-[150]">
+        <Transition name="slide-up">
+          <div v-if="flash.success" class="bg-emerald text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 backdrop-blur-md">
+            <span class="text-lg">✓</span> {{ flash.success }}
+          </div>
+        </Transition>
+        <Transition name="slide-up">
+          <div v-if="flash.error" class="bg-red-600 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 backdrop-blur-md">
+            <span class="text-lg">!</span> {{ flash.error }}
+          </div>
+        </Transition>
+      </div>
     </div>
   </div>
 </template>
@@ -212,8 +142,8 @@ import { useI18n } from 'vue-i18n'
 import AppSidebar from './AppSidebar.vue'
 import AppFooter from './AppFooter.vue'
 
-const auth  = useAuthStore()
-const page  = usePage()
+const auth = useAuthStore()
+const page = usePage()
 const { t, locale } = useI18n()
 
 const menuOpen = ref(false)
@@ -228,31 +158,15 @@ onClickOutside(avatarRef, () => { menuOpen.value = false })
 onClickOutside(langRef, () => { langOpen.value = false })
 onClickOutside(themeRef, () => { themeOpen.value = false })
 
-// Close mobile menu on navigate
 router.on('navigate', () => { mobileMenuOpen.value = false })
 
 const flash = computed(() => page.props.flash as Record<string, string> ?? {})
-
-// Theme — useColorMode handles light, dark, and auto (system)
 const mode = useColorMode({
   selector: 'html',
   attribute: 'class',
-  modes: {
-    dark: 'dark',
-    light: '',
-  },
-  storageKey: 'vueuse-color-scheme',
+  modes: { dark: 'dark', light: '' },
 })
 
-// Safety sync for dark mode class
-watch(mode, (val) => {
-  const isDark = val === 'dark' || (val === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)
-  if (isDark) document.documentElement.classList.add('dark')
-  else       document.documentElement.classList.remove('dark')
-}, { immediate: true })
-
-// I18n logic
-const currentLang = computed(() => locale.value)
 const isRTL = computed(() => locale.value === 'ar')
 const currentFlag = computed(() => {
   if (locale.value === 'ar') return '🇲🇦'
@@ -264,61 +178,36 @@ function setLang(lang: string) {
   locale.value = lang
   localStorage.setItem('locale', lang)
   langOpen.value = false
-  // Force document direction
   document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr')
-  document.documentElement.setAttribute('lang', lang)
 }
 
-const initials = computed(() => {
-  const name = auth.user?.name ?? ''
-  return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
-})
-
+const initials = computed(() => (auth.user?.name ?? '').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase())
 const dashboardUrl = computed(() => {
-  if (auth.isAdmin)   return '/admin-system-secure'
-  if (auth.isDoctor)  return '/doctor/dashboard'
+  if (auth.isAdmin) return '/admin-system-secure'
+  if (auth.isDoctor) return '/doctor/dashboard'
   return '/dashboard'
 })
 
 const pageTitle = computed(() => {
   const url = page.url
-  if (url === '/admin') return t('nav.platform_overview')
-  if (url === '/admin/verifications') return t('nav.verifications')
-  if (url.startsWith('/doctor/dashboard')) return t('nav.dashboard')
-  if (url.startsWith('/dashboard')) return t('nav.my_dashboard')
-  if (url.startsWith('/doctors')) return t('nav.find_doctors')
+  if (url.includes('admin')) return t('nav.administration')
+  if (url.includes('doctor')) return t('nav.dashboard')
+  if (url.includes('dashboard')) return t('nav.my_dashboard')
   return 'DocAppoint'
 })
 
-const pageSubTitle = computed(() => {
-  const url = page.url
-  if (url === '/admin') return t('nav.administration')
-  if (url === '/admin/verifications') return t('nav.verifications')
-  if (url.startsWith('/doctor/dashboard')) return t('nav.manage_schedule')
-  if (url.startsWith('/dashboard')) return t('nav.patient_portal')
-  if (url.startsWith('/doctors')) return t('nav.find_doctors')
-  return 'Healthcare delivered with precision'
-})
-
 function logout() {
-  menuOpen.value = false
   router.post('/logout')
 }
 </script>
 
 <style scoped>
-.nav-link {
-  @apply px-3 py-2 rounded-lg text-sm text-slate-600 font-medium hover:text-ink hover:bg-slate-50 transition-colors;
-}
-.nav-link.active {
-  @apply text-emerald bg-emerald-4;
-}
-.btn-primary {
-  @apply bg-emerald text-white rounded-[10px] font-semibold hover:bg-emerald-2 transition-all shadow-sm;
-}
-.flash-enter-active, .flash-leave-active { transition: all .3s ease; }
-.flash-enter-from, .flash-leave-to { opacity: 0; transform: translateY(-8px); }
+.pop-enter-active, .pop-leave-active { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); transform-origin: top right; }
+.pop-enter-from, .pop-leave-to { opacity: 0; transform: scale(0.9) translateY(-10px); }
 
-.lang-pop-enter-active, .lang-pop-leave-active { transition: all .2s cubic-bezier(0.4, 0, 0.2, 1); transform-origin: top right; }
-.lang-pop-enter-from, .lang-pop-leave-to { opacity: 0; transform: scale(0.95) translateY(-10px); }
+.slide-up-enter-active, .slide-up-leave-active { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+.slide-up-enter-from, .slide-up-leave-to { opacity: 0; transform: translateY(20px); }
+
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+.fade-in { animation: fade-in 0.3s ease-out; }
 </style>

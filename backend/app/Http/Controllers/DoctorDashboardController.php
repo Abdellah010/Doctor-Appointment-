@@ -70,7 +70,9 @@ class DoctorDashboardController extends Controller
     {
         $data = $request->validate([
             'bio'   => 'nullable|string|max:500',
-            'phone' => 'nullable|string|max:25',
+            'phone' => 'nullable|string|max:25|unique:users,phone,' . $request->user()->id,
+        ], [
+            'phone.unique' => 'This phone number is already used by another user.',
         ]);
 
         $request->user()->update(['phone' => $data['phone'] ?? null]);

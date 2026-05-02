@@ -1,12 +1,16 @@
 <template>
-  <div class="min-h-screen grid grid-cols-1 lg:grid-cols-[1fr_520px] font-sans bg-slate-50 dark:bg-ink overflow-hidden transition-colors duration-500">
+  <div class="min-h-screen grid grid-cols-1 lg:grid-cols-2 font-sans bg-slate-50 dark:bg-ink overflow-hidden transition-colors duration-500">
     
     <!-- Left panel: Visual Hero -->
     <div class="hidden lg:flex flex-col p-16 relative overflow-hidden bg-ink">
-      <!-- Animated Background elements -->
-      <div class="absolute top-0 left-0 w-full h-full opacity-40">
-        <div class="absolute top-[-10%] left-[-10%] w-[70%] h-[70%] bg-emerald/10 blur-[120px] animate-pulse rounded-full"></div>
-        <div class="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-blue-500/10 blur-[100px] rounded-full"></div>
+      <!-- Photographic Background -->
+      <img src="/images/moroccan_doctor_smile.png" alt="Friendly Moroccan Doctor" class="absolute inset-0 w-full h-full object-cover opacity-50 z-0 transition-transform duration-[20s] hover:scale-110" />
+      
+      <!-- Dark Gradient Overlay for Text Legibility -->
+      <div class="absolute inset-0 bg-gradient-to-b from-ink/90 via-ink/50 to-ink z-0"></div>
+
+      <!-- Static Color Accents (Optimized for Performance) -->
+      <div class="absolute top-0 left-0 w-full h-full opacity-30 pointer-events-none z-0" style="background: radial-gradient(circle at 10% 10%, rgba(5,150,105,0.4) 0%, transparent 50%), radial-gradient(circle at 90% 90%, rgba(59,130,246,0.3) 0%, transparent 50%);">
       </div>
 
       <!-- Logo -->
@@ -68,7 +72,7 @@
         <span class="text-ink dark:text-white font-black text-[18px] uppercase tracking-tight">DocAppoint</span>
       </div>
 
-      <div class="w-full max-w-[420px]">
+      <div class="w-full max-w-[420px] mt-16 lg:mt-0">
         <div class="mb-12">
           <h1 class="text-[36px] font-black text-ink dark:text-white tracking-tighter mb-3 leading-none">
             {{ currentTitle }}
@@ -94,7 +98,7 @@
         </div>
 
         <!-- Form -->
-        <form @submit.prevent="submit" class="space-y-6">
+        <form @submit.prevent="submit" class="space-y-6" autocomplete="off">
           
           <div v-if="!isLogin" class="animate-in slide-in-from-top-2 duration-300">
             <div class="form-group">
@@ -114,7 +118,7 @@
               <div class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald transition-colors">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
               </div>
-              <input v-model="form.identity" class="form-input-premium" :type="isLogin ? 'text' : 'email'" :placeholder="isLogin ? 'Email or phone number' : 'contact@hospital.com'" required>
+              <input v-model="form.identity" class="form-input-premium" :type="isLogin ? 'text' : 'email'" :placeholder="isLogin ? 'Email or phone number' : 'contact@hospital.com'" required autocomplete="off">
             </div>
           </div>
 
@@ -156,7 +160,7 @@
               <div class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald transition-colors">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
               </div>
-              <input v-model="form.password" class="form-input-premium pr-12" :type="showPassword ? 'text' : 'password'" placeholder="••••••••" required>
+              <input v-model="form.password" class="form-input-premium pr-12" :type="showPassword ? 'text' : 'password'" placeholder="••••••••" required autocomplete="new-password">
               <button
                 type="button"
                 @click="showPassword = !showPassword"

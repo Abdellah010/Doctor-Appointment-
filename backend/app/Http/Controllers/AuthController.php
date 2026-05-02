@@ -73,10 +73,12 @@ class AuthController extends Controller
             'email'     => 'required|email|unique:users',
             'password'  => ['required', Password::defaults()],
             'role'      => 'required|in:patient,doctor',
-            'phone'     => 'nullable|string|max:25',
+            'phone'     => 'nullable|string|max:25|unique:users',
             // Doctor extra fields
             'specialty' => 'required_if:role,doctor|nullable|string|max:80',
             'city'      => 'required_if:role,doctor|nullable|string|max:80',
+        ], [
+            'phone.unique' => 'This phone number is already used.',
         ]);
 
         $user = User::create([

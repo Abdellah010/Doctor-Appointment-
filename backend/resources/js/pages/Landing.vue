@@ -3,10 +3,8 @@
     <!-- Premium Hero -->
     <section class="mx-4 md:mx-6 mt-6 relative group">
       <div class="bg-white dark:bg-ink-2 border border-slate-100 dark:border-white/5 rounded-[32px] md:rounded-[40px] overflow-hidden min-h-[600px] flex flex-col lg:flex-row items-center relative transition-colors duration-500 shadow-sm">
-        <!-- Background Accents -->
-        <div class="absolute top-0 right-0 w-full h-full opacity-30 dark:opacity-20 pointer-events-none">
-          <div class="absolute top-[-20%] right-[-10%] w-[60%] h-[80%] bg-emerald/10 dark:bg-emerald/20 blur-[120px] rounded-full"></div>
-          <div class="absolute bottom-[-10%] left-[-10%] w-[40%] h-[60%] bg-blue-500/5 dark:bg-blue-500/10 blur-[100px] rounded-full"></div>
+        <!-- Background Accents (Optimized for Performance) -->
+        <div class="absolute top-0 right-0 w-full h-full opacity-30 dark:opacity-20 pointer-events-none" style="background: radial-gradient(circle at 80% 20%, rgba(5,150,105,0.15) 0%, transparent 60%), radial-gradient(circle at 20% 80%, rgba(59,130,246,0.1) 0%, transparent 60%);">
         </div>
 
         <!-- Hero Content -->

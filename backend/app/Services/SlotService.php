@@ -67,12 +67,17 @@ class SlotService
      */
     public function getAvailableSlots(Doctor $doctor, string $date): Collection
     {
-        return Slot::where('doctor_id', $doctor->id)
+        $query = Slot::where('doctor_id', $doctor->id)
             ->where('date', $date)
             ->where('is_booked', false)
-            ->where('is_blocked', false)
-            ->orderBy('start_time')
-            ->get();
+            ->where('is_blocked', false);
+
+        // If requested date is today, only show future slots
+        if ($date === now()->toDateString()) {
+            $query->where('start_time', '>', now()->format('H:i'));
+        }
+
+        return $query->orderBy('start_time')->get();
     }
 
     /**
@@ -84,6 +89,15 @@ class SlotService
             ->where('is_booked', false)
             ->where('is_blocked', false)
             ->whereRaw("DATE_FORMAT(date, '%Y-%m') = ?", [$month])
+            ->where(function ($query) {
+                // Future dates
+                $query->where('date', '>', now()->toDateString())
+                    // OR today but future time
+                    ->orWhere(function ($q) {
+                        $q->where('date', now()->toDateString())
+                          ->where('start_time', '>', now()->format('H:i'));
+                    });
+            })
             ->pluck('date')
             ->unique()
             ->values();

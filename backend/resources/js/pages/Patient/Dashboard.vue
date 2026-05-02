@@ -75,7 +75,21 @@
                   <td class="tbl-td font-semibold dark:text-white">{{ appt.doctor.user.name }}</td>
                   <td class="tbl-td text-slate-500 dark:text-white/50">{{ appt.doctor.specialty }}</td>
                   <td class="tbl-td text-slate-500 dark:text-white/50">{{ formatDate(appt.scheduled_at) }}</td>
-                  <td class="tbl-td"><StatusPill :status="appt.status" /></td>
+                  <td class="tbl-td">
+                    <div class="flex items-center justify-between gap-3">
+                      <StatusPill :status="appt.status" />
+                      <button 
+                        v-if="appt.status === 'completed' && !appt.patient_rating"
+                        @click="openReview(appt)"
+                        class="text-[10px] font-bold uppercase tracking-wider text-emerald hover:text-emerald-2 transition-colors flex items-center gap-1"
+                      >
+                        <span class="text-xs">★</span> Rate Visit
+                      </button>
+                      <div v-else-if="appt.patient_rating" class="flex items-center gap-0.5 text-amber-400 text-xs">
+                        <span v-for="i in 5" :key="i" :class="i <= appt.patient_rating ? 'opacity-100' : 'opacity-20'">★</span>
+                      </div>
+                    </div>
+                  </td>
                 </tr>
                 <tr v-if="past.length === 0">
                   <td colspan="4" class="tbl-td text-center text-slate-400 dark:text-white/30">No past appointments yet</td>
@@ -84,6 +98,13 @@
             </table>
           </div>
         </div>
+
+        <ReviewModal 
+          :is-open="modal.isOpen"
+          :appointment-id="modal.appointmentId"
+          :doctor-name="modal.doctorName"
+          @close="modal.isOpen = false"
+        />
 
         <!-- Profile sidebar -->
         <div class="mt-6 lg:mt-0">
@@ -123,6 +144,7 @@ import AppLayout from '@/components/layout/AppLayout.vue'
 import MetricCard from '@/components/ui/MetricCard.vue'
 import AppointmentRow from '@/components/ui/AppointmentRow.vue'
 import StatusPill from '@/components/ui/StatusPill.vue'
+import ReviewModal from '@/components/ui/ReviewModal.vue'
 import type { Appointment, PatientDashboardProps, User } from '@/types'
 
 const props = defineProps<PatientDashboardProps>()
@@ -131,6 +153,12 @@ const form = reactive({
   name:           props.user.name,
   phone:          props.user.phone ?? '',
   insurance_type: props.user.insurance_type,
+})
+
+const modal = reactive({
+  isOpen: false,
+  appointmentId: 0,
+  doctorName: '',
 })
 
 const initials = computed(() =>
@@ -154,6 +182,12 @@ function formatDate(dt: string) {
 function cancelAppt(appt: Appointment) {
   if (!confirm('Cancel this appointment?')) return
   router.patch(`/appointments/${appt.id}/cancel`)
+}
+
+function openReview(appt: Appointment) {
+  modal.appointmentId = appt.id
+  modal.doctorName = appt.doctor.user.name
+  modal.isOpen = true
 }
 
 function saveProfile() {

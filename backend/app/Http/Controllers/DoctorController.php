@@ -37,7 +37,13 @@ class DoctorController extends Controller
      */
     public function show(Doctor $doctor, Request $request)
     {
-        $doctor->load('user');
+        $doctor->load(['user', 'appointments' => function($q) {
+            $q->whereNotNull('patient_rating')
+              ->with('patient')
+              ->latest()
+              ->limit(5);
+        }]);
+
         $month       = $request->input('month', now()->format('Y-m'));
         $datesWithSlots = $this->slotService->getDatesWithSlots($doctor, $month);
 

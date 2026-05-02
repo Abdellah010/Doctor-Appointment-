@@ -1,8 +1,8 @@
 <template>
   <div
     class="bg-white dark:bg-ink-2 border border-slate-200 dark:border-white/10 rounded-[14px] p-3 md:p-5 shadow-sm hover:border-emerald dark:hover:border-emerald/50 hover:shadow transition-all duration-200 cursor-pointer group relative flex flex-row gap-3 md:gap-5 items-center"
-    :class="{ 'opacity-70': !doctor.isVerified }"
-    @click="!isPending && $emit('book', doctor)"
+    :class="{ 'opacity-70': isPending }"
+    @click="handleClick"
   >
     <!-- Avatar -->
     <img
@@ -47,9 +47,8 @@
         {{ isPending ? '—' : `${doctor.consultation_fee} MAD` }}
       </div>
       <button
-        v-if="!isPending"
         class="hidden md:block bg-emerald text-white text-sm font-bold px-6 py-2.5 rounded-lg hover:bg-emerald-2 transition-colors shadow-sm"
-        @click.stop="$emit('book', doctor)"
+        @click.stop="handleClick"
       >
         Book
       </button>
@@ -66,9 +65,15 @@ import { computed } from 'vue'
 import type { Doctor } from '@/types'
 
 const props = defineProps<{ doctor: Doctor }>()
-defineEmits<{ book: [doctor: Doctor] }>()
+const emit = defineEmits<{ book: [doctor: Doctor] }>()
 
 const isPending = computed(() => props.doctor.status === 'pending')
+
+function handleClick() {
+  if (!isPending.value) {
+    emit('book', props.doctor)
+  }
+}
 
 const AVATAR_COLORS = [
   { bg: '#ECFDF5', color: '#065F46' },

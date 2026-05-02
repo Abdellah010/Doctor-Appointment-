@@ -1,5 +1,5 @@
 <template>
-  <aside class="sidebar w-[240px] bg-ink flex flex-col relative overflow-hidden h-screen flex-shrink-0">
+  <aside class="sidebar w-full h-full bg-ink flex flex-col relative overflow-hidden">
     <!-- Glow effect -->
     <div class="absolute -top-[60px] -right-[60px] w-[200px] h-[200px] pointer-events-none"
          style="background: radial-gradient(circle, rgba(5,150,105,.18) 0%, transparent 70%);"></div>

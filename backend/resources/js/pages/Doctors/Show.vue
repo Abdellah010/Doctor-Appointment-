@@ -107,6 +107,7 @@
               <label class="form-label">Reason for visit</label>
               <input v-model="form.reason" class="form-input dark:bg-ink-3 dark:border-white/5 dark:text-white" placeholder="e.g. Routine checkup, chest pain follow-up…">
             </div>
+
             <div class="form-group">
               <label class="form-label">Insurance type</label>
               <select v-model="form.insurance_type" class="form-input dark:bg-ink-3 dark:border-white/5 dark:text-white appearance-none">
@@ -115,6 +116,49 @@
                 <option value="private">Private insurance</option>
                 <option value="none">None / Self-pay</option>
               </select>
+            </div>
+
+            <!-- Reviews Section -->
+            <div class="bg-white dark:bg-ink-2 border border-slate-200 dark:border-white/10 rounded-[14px] shadow-sm p-5 md:p-6 mt-6">
+              <div class="text-[15px] font-bold text-ink dark:text-white mb-5 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="w-1 h-4 bg-amber-400 rounded-full"></span>
+                  Patient Reviews
+                </div>
+                <div v-if="doctor.rating_count > 0" class="text-xs text-slate-400 font-normal">
+                  Based on {{ doctor.rating_count }} consultations
+                </div>
+              </div>
+
+              <div v-if="!doctor.appointments || doctor.appointments.length === 0" class="py-8 text-center text-sm text-slate-400 border border-dashed border-slate-200 dark:border-white/10 rounded-xl">
+                No reviews yet. Be the first to leave one after your visit!
+              </div>
+
+              <div v-else class="space-y-4">
+                <div 
+                  v-for="review in doctor.appointments" 
+                  :key="review.id"
+                  class="p-4 bg-slate-50 dark:bg-white/5 rounded-xl border border-slate-100 dark:border-white/5"
+                >
+                  <div class="flex justify-between items-start mb-2">
+                    <div class="flex items-center gap-2">
+                      <div class="w-7 h-7 rounded-full bg-slate-200 dark:bg-white/10 flex items-center justify-center text-[10px] font-bold">
+                        {{ review.patient.name.charAt(0) }}
+                      </div>
+                      <div>
+                        <div class="text-xs font-bold text-ink dark:text-white">{{ review.patient.name }}</div>
+                        <div class="text-[9px] text-slate-400 uppercase tracking-tighter">Verified Patient</div>
+                      </div>
+                    </div>
+                    <div class="flex text-amber-400 text-[10px]">
+                      <span v-for="i in 5" :key="i" :class="i <= review.patient_rating ? 'opacity-100' : 'opacity-20'">★</span>
+                    </div>
+                  </div>
+                  <p class="text-[13px] text-slate-600 dark:text-white/70 italic leading-relaxed">
+                    "{{ review.patient_review }}"
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
