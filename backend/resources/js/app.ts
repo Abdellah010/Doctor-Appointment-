@@ -1,4 +1,5 @@
 import { createApp, h } from 'vue'
+import type { DefineComponent } from 'vue'
 import { createInertiaApp } from '@inertiajs/vue3'
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers'
 import { createPinia } from 'pinia'
@@ -9,8 +10,8 @@ createInertiaApp({
   resolve: (name) =>
     resolvePageComponent(
       `./pages/${name}.vue`,
-      import.meta.glob('./pages/**/*.vue')
-    ),
+      import.meta.glob<DefineComponent>('./pages/**/*.vue')
+    ) as Promise<DefineComponent>,
   setup({ el, App, props, plugin }) {
     createApp({ render: () => h(App, props) })
       .use(plugin)

@@ -34,6 +34,7 @@ export interface Doctor {
   accepts_cnss: boolean
   accepts_ramed: boolean
   accepts_private: boolean
+  appointments?: Appointment[]
   created_at: string
 }
 

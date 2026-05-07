@@ -11,7 +11,8 @@ use App\Services\SlotService;
 class VerificationService
 {
     public function __construct(
-        private readonly SlotService $slotService
+        private readonly SlotService $slotService,
+        private readonly DoctorSearchService $doctorSearchService
     ) {}
 
     /**
@@ -26,6 +27,7 @@ class VerificationService
 
         // Generate 30 days of slots on approval
         $this->slotService->generateForDoctor($doctor, 30);
+        $this->doctorSearchService->clearCache();
 
         // Notify the doctor
         $doctor->user->notify(new DoctorApprovedNotification($doctor));
@@ -44,6 +46,7 @@ class VerificationService
         ]);
 
         $doctor->user->notify(new DoctorRejectedNotification($doctor, $reason, $notes));
+        $this->doctorSearchService->clearCache();
 
         return $doctor->fresh();
     }

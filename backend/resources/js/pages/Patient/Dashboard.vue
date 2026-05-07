@@ -145,9 +145,10 @@ import MetricCard from '@/components/ui/MetricCard.vue'
 import AppointmentRow from '@/components/ui/AppointmentRow.vue'
 import StatusPill from '@/components/ui/StatusPill.vue'
 import ReviewModal from '@/components/ui/ReviewModal.vue'
-import type { Appointment, PatientDashboardProps, User } from '@/types'
+import type { Appointment, PatientDashboardProps } from '@/types'
 
 const props = defineProps<PatientDashboardProps>()
+type MetricColor = 'green' | 'blue' | 'amber' | 'red'
 
 const form = reactive({
   name:           props.user.name,
@@ -169,7 +170,7 @@ const joinedSince = computed(() =>
   new Date(props.user.created_at).toLocaleString('en', { month: 'short', year: 'numeric' })
 )
 
-const metrics = computed(() => [
+const metrics = computed<Array<{ label: string; value: number; delta: string; color: MetricColor; icon: string }>>(() => [
   { label: 'Upcoming',         value: props.stats.upcoming_count,  delta: 'Next: soon',  color: 'green', icon: '📅' },
   { label: 'Total consultations', value: props.stats.completed_count, delta: 'All time',    color: 'blue',  icon: '✅' },
   { label: 'Doctors visited',  value: props.stats.doctors_visited, delta: 'Across specialties', color: 'amber', icon: '🩺' },

@@ -20,13 +20,15 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // ── Admin ──
-        $admin = User::create([
-            'name'     => 'Admin DocAppoint',
-            'email'    => 'admin@docappoint.ma',
-            'password' => Hash::make('password'),
-            'role'     => UserRole::Admin,
-            'phone'    => '+212600000001',
-        ]);
+        $admin = User::updateOrCreate(
+            ['email' => 'admin@docappoint.ma'],
+            [
+                'name'     => 'Admin DocAppoint',
+                'password' => Hash::make('password'),
+                'role'     => UserRole::Admin,
+                'phone'    => '+212600000001',
+            ]
+        );
 
         // ── Verified Doctors ──
         $doctors = [
@@ -38,31 +40,35 @@ class DatabaseSeeder extends Seeder
         ];
 
         $doctorModels = [];
-        foreach ($doctors as [$name, $email, $specialty, $city, $fee, $rating, $count, $days]) {
-            $user = User::create([
-                'name'     => "Dr. $name",
-                'email'    => $email,
-                'password' => Hash::make('password'),
-                'role'     => UserRole::Doctor,
-                'phone'    => '+212661' . rand(100000, 999999),
-            ]);
+        foreach ($doctors as $index => [$name, $email, $specialty, $city, $fee, $rating, $count, $days]) {
+            $user = User::updateOrCreate(
+                ['email' => $email],
+                [
+                    'name'     => "Dr. $name",
+                    'password' => Hash::make('password'),
+                    'role'     => UserRole::Doctor,
+                    'phone'    => '+212661' . str_pad((string) ($index + 1), 6, '0', STR_PAD_LEFT),
+                ]
+            );
 
-            $doctor = Doctor::create([
-                'user_id'          => $user->id,
-                'specialty'        => $specialty,
-                'city'             => $city,
-                'license_number'   => 'MA-' . strtoupper(substr($specialty,0,3)) . '-2022-' . rand(1000,9999),
-                'consultation_fee' => $fee,
-                'status'           => DoctorStatus::Verified,
-                'bio'              => "Board-certified {$specialty} specialist with over 10 years of experience.",
-                'available_days'   => $days,
-                'slot_duration'    => 30,
-                'rating'           => $rating,
-                'rating_count'     => $count,
-                'accepts_cnss'     => true,
-                'accepts_ramed'    => rand(0,1),
-                'accepts_private'  => true,
-            ]);
+            $doctor = Doctor::updateOrCreate(
+                ['user_id' => $user->id],
+                [
+                    'specialty'        => $specialty,
+                    'city'             => $city,
+                    'license_number'   => 'MA-' . strtoupper(substr($specialty, 0, 3)) . '-2022-' . str_pad((string) ($index + 1), 4, '0', STR_PAD_LEFT),
+                    'consultation_fee' => $fee,
+                    'status'           => DoctorStatus::Verified,
+                    'bio'              => "Board-certified {$specialty} specialist with over 10 years of experience.",
+                    'available_days'   => $days,
+                    'slot_duration'    => 30,
+                    'rating'           => $rating,
+                    'rating_count'     => $count,
+                    'accepts_cnss'     => true,
+                    'accepts_ramed'    => $index % 2 === 0,
+                    'accepts_private'  => true,
+                ]
+            );
 
             $this->slotService->generateForDoctor($doctor, 30);
             $doctorModels[] = $doctor;
@@ -73,23 +79,28 @@ class DatabaseSeeder extends Seeder
             ['Hassan Benkirane', 'hassan@mail.ma', 'Pediatrics',     'Casablanca'],
             ['Maryam Ouali',     'maryam@mail.ma', 'Ophthalmology',  'Rabat'],
             ['Rachid Tahiri',    'rachid@mail.ma', 'Gastroenterology','Fes'],
-        ] as [$name, $email, $specialty, $city]) {
-            $user = User::create([
-                'name'     => "Dr. $name",
-                'email'    => $email,
-                'password' => Hash::make('password'),
-                'role'     => UserRole::Doctor,
-            ]);
-            Doctor::create([
-                'user_id'        => $user->id,
-                'specialty'      => $specialty,
-                'city'           => $city,
-                'license_number' => 'MA-PND-2024-' . rand(1000,9999),
-                'consultation_fee'=> rand(200,400),
-                'status'         => DoctorStatus::Pending,
-                'available_days' => ['mon','tue','wed','thu','fri'],
-                'slot_duration'  => 30,
-            ]);
+        ] as $index => [$name, $email, $specialty, $city]) {
+            $user = User::updateOrCreate(
+                ['email' => $email],
+                [
+                    'name'     => "Dr. $name",
+                    'password' => Hash::make('password'),
+                    'role'     => UserRole::Doctor,
+                    'phone'    => '+212662' . str_pad((string) ($index + 1), 6, '0', STR_PAD_LEFT),
+                ]
+            );
+            Doctor::updateOrCreate(
+                ['user_id' => $user->id],
+                [
+                    'specialty'        => $specialty,
+                    'city'             => $city,
+                    'license_number'   => 'MA-PND-2024-' . str_pad((string) ($index + 1), 4, '0', STR_PAD_LEFT),
+                    'consultation_fee' => 200 + ($index * 50),
+                    'status'           => DoctorStatus::Pending,
+                    'available_days'   => ['mon','tue','wed','thu','fri'],
+                    'slot_duration'    => 30,
+                ]
+            );
         }
 
         // ── Patients ──
@@ -101,24 +112,35 @@ class DatabaseSeeder extends Seeder
             ['Hind Amrani',     'hind@gmail.com',    '+212664234567', 'cnss'],
             ['Younes Kabbaj',   'younes@gmail.com',  '+212665234567', 'none'],
         ] as [$name, $email, $phone, $insurance]) {
-            $patients[] = User::create([
-                'name'           => $name,
-                'email'          => $email,
-                'password'       => Hash::make('password'),
-                'role'           => UserRole::Patient,
-                'phone'          => $phone,
-                'insurance_type' => $insurance,
-            ]);
+            $patients[] = User::updateOrCreate(
+                ['email' => $email],
+                [
+                    'name'           => $name,
+                    'password'       => Hash::make('password'),
+                    'role'           => UserRole::Patient,
+                    'phone'          => $phone,
+                    'insurance_type' => $insurance,
+                ]
+            );
         }
 
         // ── Sample Appointments ──
         $firstDoctor = $doctorModels[0];
-        $availableSlot = Slot::where('doctor_id', $firstDoctor->id)
-            ->where('is_booked', false)
-            ->where('date', '>=', now()->toDateString())
+        $existingAppointment = Appointment::where('patient_id', $patients[0]->id)
+            ->where('doctor_id', $firstDoctor->id)
+            ->where('reason', 'Routine cardiac checkup and ECG review')
             ->first();
 
-        if ($availableSlot && !empty($patients)) {
+        if (!$existingAppointment && !empty($patients)) {
+            $availableSlot = Slot::where('doctor_id', $firstDoctor->id)
+                ->where('is_booked', false)
+                ->where('date', '>=', now()->toDateString())
+                ->first();
+
+            if (!$availableSlot) {
+                return;
+            }
+
             Appointment::create([
                 'patient_id'    => $patients[0]->id,
                 'doctor_id'     => $firstDoctor->id,

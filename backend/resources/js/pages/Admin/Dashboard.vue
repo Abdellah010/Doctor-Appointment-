@@ -5,7 +5,7 @@
       <!-- Alert banner -->
       <Link
         v-if="stats.pending_verifications > 0"
-        href="/admin/verifications?status=pending"
+        :href="`${adminBaseUrl}/verifications?status=pending`"
         class="flex items-center gap-4 bg-amber-50 border border-amber-200 rounded-[14px] px-5 py-4 mb-7 hover:shadow transition-shadow group"
       >
         <span class="text-2xl flex-shrink-0">⚠️</span>
@@ -31,7 +31,7 @@
         <div>
           <div class="flex items-center justify-between mb-3">
             <h2 class="text-[13px] font-bold text-ink">Recent appointments</h2>
-            <Link href="/admin/verifications" class="text-xs text-emerald font-semibold hover:underline">View verifications →</Link>
+            <Link :href="`${adminBaseUrl}/verifications`" class="text-xs text-emerald font-semibold hover:underline">View verifications →</Link>
           </div>
           <div class="bg-white border border-slate-200 rounded-[14px] shadow-sm overflow-hidden">
             <table class="w-full text-sm">
@@ -120,6 +120,7 @@ import StatusPill from '@/components/ui/StatusPill.vue'
 import type { AdminDashboardProps } from '@/types'
 
 const props = defineProps<AdminDashboardProps>()
+const adminBaseUrl = '/admin-system-secure'
 
 const activityBars = computed(() => {
   const max = Math.max(...props.weekly_activity.map(d => d.count), 1)

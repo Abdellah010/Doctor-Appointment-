@@ -40,13 +40,13 @@
 
         <!-- Trust Signals -->
         <div class="grid grid-cols-1 gap-5">
-          <div v-for="sig in tm('auth.trust_signals')" :key="sig" class="flex items-center gap-4 text-slate-300 group">
+          <div v-for="sig in trustSignals" :key="sig" class="flex items-center gap-4 text-slate-300 group">
             <div class="w-6 h-6 rounded-lg bg-emerald/10 border border-emerald/20 flex items-center justify-center group-hover:bg-emerald group-hover:border-emerald transition-all duration-300">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" class="text-emerald group-hover:text-white transition-colors">
                 <polyline points="20 6 9 17 4 12"></polyline>
               </svg>
             </div>
-            <span class="text-[14px] font-semibold tracking-tight">{{ rt(sig) }}</span>
+            <span class="text-[14px] font-semibold tracking-tight">{{ sig }}</span>
           </div>
         </div>
       </div>
@@ -234,8 +234,10 @@ import LocationSelect from '@/components/ui/LocationSelect.vue'
 
 const { t, tm, rt } = useI18n()
 
+type AuthRole = 'patient' | 'doctor' | 'admin'
+
 const props = defineProps<{
-  role?: 'patient' | 'doctor' | 'admin'
+  role?: AuthRole
   isRegister?: boolean
 }>()
 
@@ -243,7 +245,7 @@ const isLogin      = ref(!props.isRegister)
 const loading      = ref(false)
 const showPassword = ref(false)
 const errors       = ref<string[]>([])
-const selectedRole = ref(props.role || 'patient')
+const selectedRole = ref<AuthRole>(props.role ?? 'patient')
 
 const currentTitle = computed(() => {
   const r = props.role ?? selectedRole.value
@@ -255,7 +257,14 @@ const roles = [
   { value: 'patient', label: 'patient' },
   { value: 'doctor',  label: 'doctor'  },
   { value: 'admin',   label: 'admin'   },
-]
+] as const
+
+const trustSignals = computed<string[]>(() => {
+  const messages = tm('auth.trust_signals') as unknown
+  if (!Array.isArray(messages)) return []
+
+  return messages.map((message) => rt(message as never))
+})
 
 const specialtiesList = [
   'Cardiology', 'Dermatology', 'Endocrinology', 'Gastroenterology', 

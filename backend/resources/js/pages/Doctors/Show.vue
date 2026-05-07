@@ -151,7 +151,7 @@
                       </div>
                     </div>
                     <div class="flex text-amber-400 text-[10px]">
-                      <span v-for="i in 5" :key="i" :class="i <= review.patient_rating ? 'opacity-100' : 'opacity-20'">★</span>
+                      <span v-for="i in 5" :key="i" :class="i <= (review.patient_rating ?? 0) ? 'opacity-100' : 'opacity-20'">★</span>
                     </div>
                   </div>
                   <p class="text-[13px] text-slate-600 dark:text-white/70 italic leading-relaxed">

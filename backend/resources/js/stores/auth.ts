@@ -4,7 +4,7 @@ import { usePage } from '@inertiajs/vue3'
 import type { User } from '@/types'
 
 export const useAuthStore = defineStore('auth', () => {
-  const page = usePage()
+  const page = usePage<{ auth?: { user?: User | null } }>()
 
   const user = computed<User | null>(() => page.props.auth?.user ?? null)
   const isLoggedIn = computed(() => user.value !== null)

@@ -196,6 +196,14 @@ const pageTitle = computed(() => {
   return 'DocAppoint'
 })
 
+const pageSubTitle = computed(() => {
+  const url = page.url
+  if (url.includes('admin')) return 'Manage doctors, appointments, and verification requests.'
+  if (url.includes('doctor')) return 'Manage your schedule and appointment requests.'
+  if (url.includes('dashboard')) return 'Track your appointments and healthcare activity.'
+  return 'Book appointments with verified doctors in Morocco.'
+})
+
 function logout() {
   router.post('/logout')
 }

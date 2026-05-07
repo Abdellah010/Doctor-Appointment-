@@ -6,7 +6,7 @@
         <Link
           v-for="tab in tabs"
           :key="tab.key"
-          :href="`/admin/verifications?status=${tab.key}`"
+          :href="`${adminBaseUrl}/verifications?status=${tab.key}`"
           :class="['filter-tab', status === tab.key ? 'on' : '']"
         >
           {{ tab.label }}
@@ -154,6 +154,7 @@ import StatusPill from '@/components/ui/StatusPill.vue'
 import type { AdminVerificationsProps, Doctor } from '@/types'
 
 const props = defineProps<AdminVerificationsProps>()
+const adminBaseUrl = '/admin-system-secure'
 
 const tabs = [
   { key: 'all',      label: 'All' },
@@ -189,7 +190,7 @@ function timeAgo(dateStr: string): string {
 }
 
 function approve(doctorId: number) {
-  router.patch(`/admin/doctors/${doctorId}/approve`, {}, {
+  router.patch(`${adminBaseUrl}/doctors/${doctorId}/approve`, {}, {
     preserveScroll: true,
   })
 }
@@ -201,7 +202,7 @@ function openReject(doctor: Doctor) {
 
 function submitReject() {
   if (!rejectModal.doctor) return
-  router.patch(`/admin/doctors/${rejectModal.doctor.id}/reject`, rejectForm, {
+  router.patch(`${adminBaseUrl}/doctors/${rejectModal.doctor.id}/reject`, rejectForm, {
     preserveScroll: true,
     onSuccess: () => { rejectModal.open = false },
   })
